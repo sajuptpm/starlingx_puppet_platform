@@ -1,0 +1,21 @@
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/docker-distribution
+http:
+  addr: <%= @docker_registry_ip %>:9001
+  tls:
+    certificate: /etc/ssl/private/self-signed-server-cert.pem
+    key: /etc/ssl/private/self-signed-server-cert.pem
+  headers:
+    X-Content-Type-Options: [nosniff]
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
