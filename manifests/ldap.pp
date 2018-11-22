@@ -127,22 +127,28 @@ class platform::ldap::bootstrap
   $dn = 'cn=ldapadmin,dc=cgcs,dc=local'
 
   exec { 'populate initial ldap configuration':
-    command => "ldapadd -D ${dn} -w ${admin_pw} -f /etc/openldap/initial_config.ldif"
+    command => "ldapadd -D ${dn} -w ${admin_pw} -f /etc/openldap/initial_config.ldif",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
   exec { "create ldap admin user":
-    command => "ldapadduser admin root"
+    command => "ldapadduser admin root",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
   exec { "create ldap operator user":
-    command => "ldapadduser operator users"
+    command => "ldapadduser operator users",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
   exec { 'create ldap protected group':
-    command => "ldapaddgroup ${::platform::params::protected_group_name} ${::platform::params::protected_group_id}"
+    command => "ldapaddgroup ${::platform::params::protected_group_name} ${::platform::params::protected_group_id}",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
   exec { "add admin to wrs protected group" :
     command => "ldapaddusertogroup admin ${::platform::params::protected_group_name}",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
   exec { "add operator to wrs protected group" :
     command => "ldapaddusertogroup operator ${::platform::params::protected_group_name}",
+    onlyif  => '/usr/bin/test -e /etc/openldap/slapd.conf'
   } ->
 
   # Change operator shell from default to /usr/local/bin/cgcs_cli
